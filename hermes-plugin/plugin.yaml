@@ -1,0 +1,4 @@
+name: iphone-screen
+version: "0.3.10"
+description: "Live iPhone mirror pane for Hermes Desktop — mirrors the phone over the iphone-use loopback HTTP bridge (screen-http on 127.0.0.1) with gesture cursors and refresh/home/screenshot tools. The pane appears when the iphone-use MCP server is running; enable the iPhone Use MCP server and this plugin for the live view."
+author: "im4saken (fork of zhongerxin/iPhone-use)"

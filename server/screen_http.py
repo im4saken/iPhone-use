@@ -27,7 +27,7 @@ DEFAULT_PORT = 18199
 class _Handler(BaseHTTPRequestHandler):
     server_version = "iPhoneUseScreen/1"
 
-    def log_message(self, *args):
+    def log_message(self, format, *args):
         pass  # stdout is the MCP stdio pipe.
 
     def _send(self, status: int, payload: dict):

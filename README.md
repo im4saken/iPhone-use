@@ -172,6 +172,18 @@ python3 scripts/package.py
 - [安装与连接故障排查](skills/iphone-use-setup/references/troubleshooting.md)
 - [更新记录](CHANGELOG.md)
 
+## Hermes 支持（本 fork 新增）
+
+Hermes Desktop 没有 Codex 的 MCP-Apps widget 渲染面，因此本 fork 提供一条等价的实时屏幕通路：MCP 服务在 `127.0.0.1` 上起一个 loopback HTTP 桥（`server/screen_http.py`，默认端口 18199，可用 `IPHONE_USE_SCREEN_HTTP` 覆盖，设为 `0` 禁用），Hermes 桌面插件（`hermes-plugin/`）的 pane 通过 gateway 代理轮询该桥。数据流与 Codex widget 共用同一个 ScreenHub，5 秒采集租约自动仲裁 USB 访问——两者可同时在线。
+
+安装（需要本仓库 checkout，单一事实源）：
+
+```sh
+sh scripts/install-hermes.sh
+```
+
+脚本会把 `hermes-plugin/` 链接到 `~/.hermes/plugins/iphone-screen`、在 `plugins.enabled` 中启用它，并把 `mcp_servers.iphone-use` 指向本仓库的 `server/iphone_use.py`。之后在 Hermes 桌面端：⌘K → Reload desktop plugins，再到 Capabilities → Plugins 打开 iPhone Screen（默认关闭）。pane 显示"未连接"直到 agent 调用过一次 `pua_*` 屏幕工具（那会拉起 MCP 服务与桥）。排障：端口文件 `~/.local/share/iphone-use/screen-http.json`（0600）；pane 与 Codex widget 并存时如画面交替出现，是租约仲裁在起作用，属正常。
+
 ## 依赖与致谢
 
 本项目依赖 [Appium](https://github.com/appium/appium) 生态与 [WebDriverAgent](https://github.com/appium/WebDriverAgent)：WDA 提供手机端的自动化执行服务，[appium-ios-device](https://github.com/appium/appium-ios-device) 提供 USB 设备通信、端口转发与屏幕流连接能力。iPhone Use 在这些基础上提供 Codex 插件、MCP 工具、安装引导与屏幕 widget，无需单独运行 Appium Server。

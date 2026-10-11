@@ -1,0 +1,8 @@
+{
+  "name": "iphone-screen",
+  "label": "iPhone Screen",
+  "description": "Live iPhone mirror for the Hermes desktop pane (iphone-use loopback bridge)",
+  "icon": "Smartphone",
+  "version": "0.3.10",
+  "api": "plugin_api.py"
+}

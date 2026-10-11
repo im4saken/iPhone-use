@@ -59,8 +59,18 @@ agent 一调 pua_ready 就自动上线。
    - `ScreenHttpServer(state_dir, frame_fn, action_fn, port=18199)`，daemon 线程 ThreadingHTTPServer 绑 127.0.0.1
    - `GET /frame?after_seq=&last_event_id=` → `ScreenHub.frame()` 的返回（JSON）
    - `POST /action` {action} → `Runtime.screen_action()` 的返回
-   - 端口写入 state_dir/`screen-http.json`（0600）；CORS `*`；stdout 是 stdio pipe，log_message 已静默
-   - **待修**：`log_message(self, *args)` pyright 签名警告（改成 `self, format, *args` 或直接删掉 override）
+   - 端口写入 state_dir/`screen-http.json`（0600）；CORS `*`；stdout 是 stdio pipe，log_message 已静默（签名警告已修）
+3. **5.1 `server/iphone_use.py` 集成**（done，已验证）：import + `Runtime.__init__` 建 ScreenHttpServer（env `IPHONE_USE_SCREEN_HTTP`，默认 18199，0=禁用）+ `_dispatch` 懒启动 + `close()`；fake-hub HTTP 端到端通过（/frame、/action、端口文件、close 释放）
+4. **5.2 `hermes-plugin/dashboard/`**（done，已验证）：manifest.json（name+api，无 tab/entry=不占 dashboard tab）+ plugin_api.py（FastAPI router：/frame、/action 转发 loopback；bridge 未起→200 离线形状；frame_available=false 时探针 WDA /status 注入 service_ready；/status）。Hermes venv import + fastapi TestClient 三场景通过
+5. **5.3 `hermes-plugin/desktop/plugin.js`**（done，node --check 通过）：app.ts 逻辑逐行移植；传输层换 ctx.rest（timeoutMs）；CSS 全量 .ips- 前缀 + 主题变量映射；glow 层保留 DOM 不点亮（v1 简化）；ctx 经 props 传入
+6. **5.4 `scripts/install-hermes.sh`**（done，幂等）：symlink + plugins.enabled 文本插入（无 reformat）+ MCP 指向 repo
+7. **5.6 收尾**：README Hermes 小节 + skill `iphone-use` 更新为"已安装"描述
+
+**剩余（5.5 真机验证）**：
+- [ ] install-hermes.sh 实际执行（改 config.yaml，等用户 go）
+- [ ] ⌘K Reload desktop plugins → pane 出现（需用户在桌面端操作）
+- [ ] 真机：USB + WDA → agent 跑 pua_tap 看手势光标；curl /frame 解码 JPEG
+- [ ] Codex 共存 lease 仲裁确认
 
 ## 5. 剩余工作（按序，含具体做法）
 

@@ -22,6 +22,7 @@ from wda_controller import CALL_BUDGET, DEFAULT_MAX_NODES, PhoneController, TYPI
 from wda_setup import SetupManager, state_directory
 from wda_apps import AppCatalog
 from wda_screen import ScreenHub
+from screen_http import DEFAULT_PORT, ScreenHttpServer
 import wda_image
 from analytics import Analytics
 
@@ -280,6 +281,8 @@ class Runtime:
         self._replied_at=None
         self._device_lookup=None
         self.analytics=Analytics(self.state_dir,VERSION)
+        # Loopback preview bridge for host apps without an MCP-Apps UI surface; "0" or empty disables it.
+        self.screen_http=ScreenHttpServer(self.state_dir,self.screen.frame,self.screen_action,int(setting("IPHONE_USE_SCREEN_HTTP",DEFAULT_PORT,0,65535)))
 
     def call(self,name,args):
         started=time.monotonic();data=None;error=None
@@ -302,6 +305,7 @@ class Runtime:
         if not isinstance(name,str) or not name.startswith("pua_") or name[4:] not in SCHEMAS:raise WDAError("unknown_tool","Unknown PUA tool.")
         validate(args,SCHEMAS[name[4:]]);validate_semantics(name[4:],args)
         if name in ("pua_screen","pua_screen_frame","pua_screen_action"):self.identify_device()
+        if name in ("pua_screen","pua_screen_frame","pua_screen_action") and self.screen_http.port:self.screen_http.start()
         # Cached preview polling does not share the PUA action/session lock.
         if name=="pua_screen_frame":return self.screen.frame(**args)
         if name=="pua_screen_action":return self.screen_action(args["action"])
@@ -567,7 +571,7 @@ class Runtime:
 
     def close(self):
         try:self.screen.close();self.client.close()
-        finally:self.analytics.close()
+        finally:self.analytics.close();self.screen_http.close()
 
 
 def result_content(data,structured=False):
