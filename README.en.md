@@ -1,5 +1,7 @@
 # iPhone Use
 
+> **Fork by [im4saken](https://github.com/im4saken/iPhone-use)** — adds a **Hermes Desktop live-screen pane** (loopback HTTP bridge + desktop plugin, see [Hermes support](#hermes-support-fork-addition)) on top of the upstream Codex integration. Upstream: [zhongerxin/iPhone-use](https://github.com/zhongerxin/iPhone-use).
+
 [中文](README.md) · **English**
 
 ![iPhone Use controlling a real iPhone in Codex with a live screen preview](assets/iphone-use-demo.png)
@@ -164,6 +166,18 @@ python3 scripts/package.py
 The UI builds into self-contained HTML. Source packages are written to `dist/iphone-use-<version>-source.zip`; normal installation and use do not require rebuilding the UI. Installed plugins retain the complete widget source, styles, build scripts, configuration, dependency lockfile, and widget tests for local maintenance.
 
 See [screen preview and recovery](skills/iphone-use/references/screen.md), [app identifiers](skills/iphone-use/references/apps.md), [troubleshooting](skills/iphone-use-setup/references/troubleshooting.md), and [changelog](CHANGELOG.md).
+
+## Hermes support (fork addition)
+
+Hermes Desktop has no Codex MCP-Apps widget surface, so this fork provides an equivalent live-screen path: the MCP server runs a loopback HTTP bridge on `127.0.0.1` (`server/screen_http.py`, default port 18199; override with `IPHONE_USE_SCREEN_HTTP`, set to `0` to disable), and the Hermes desktop plugin (`hermes-plugin/`) renders a pane that polls the bridge through the gateway proxy. The data flow shares the same ScreenHub as the Codex widget, and the 5-second capture lease arbitrates USB access — both can be live at once.
+
+Install (requires this repo checkout as the single source of truth):
+
+```sh
+sh scripts/install-hermes.sh
+```
+
+The script links `hermes-plugin/` into `~/.hermes/plugins/iphone-screen`, enables it in `plugins.enabled`, and points `mcp_servers.iphone-use` at this repo's `server/iphone_use.py`. Then in Hermes Desktop: ⌘K → Reload desktop plugins, and Capabilities → Plugins → turn on iPhone Screen (off by default). The pane shows "not connected" until the agent calls any `pua_*` screen tool once (that spawns the MCP server and bridge). Troubleshooting: port file `~/.local/share/iphone-use/screen-http.json` (0600); if the pane and a Codex widget alternate frames, that is the capture lease arbitrating — expected.
 
 ## Dependencies and acknowledgements
 

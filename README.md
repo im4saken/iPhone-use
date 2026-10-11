@@ -1,5 +1,7 @@
 # iPhone Use
 
+> **[im4saken 的 fork](https://github.com/im4saken/iPhone-use)** — 在上游 Codex 支持之外，新增 **Hermes Desktop 实时屏幕 pane**（loopback HTTP 桥 + 桌面插件，见下方 [Hermes 支持](#hermes-支持本-fork-新增)）。上游：[zhongerxin/iPhone-use](https://github.com/zhongerxin/iPhone-use)。
+
 **中文** · [English](README.en.md)
 
 ![iPhone Use 在 Codex 中操作真实 iPhone 并实时展示手机屏幕](assets/iphone-use-demo.png)
