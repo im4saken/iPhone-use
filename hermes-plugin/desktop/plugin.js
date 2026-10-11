@@ -592,7 +592,10 @@ export default {
       id: 'pane',
       area: 'panes',
       title: 'iPhone Screen',
-      data: { placement: 'right', width: '340px' },
+      // placement:'main' + dock into the workspace's right edge = a persistent,
+      // visible tile. (placement:'right' is the collapsible right sidebar's role
+      // and hides the pane until "Show Right Sidebar" — not what a live mirror wants.)
+      data: { placement: 'main', dock: { pane: 'workspace', pos: 'right' }, width: '340px' },
       render: () => jsx(Pane, { ctx }),
     })
     ctx.onDispose(() => removePane())
