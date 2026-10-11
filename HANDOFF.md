@@ -66,11 +66,15 @@ agent 一调 pua_ready 就自动上线。
 6. **5.4 `scripts/install-hermes.sh`**（done，幂等）：symlink + plugins.enabled 文本插入（无 reformat）+ MCP 指向 repo
 7. **5.6 收尾**：README Hermes 小节 + skill `iphone-use` 更新为"已安装"描述
 
-**剩余（5.5 真机验证）**：
-- [ ] install-hermes.sh 实际执行（改 config.yaml，等用户 go）
-- [ ] ⌘K Reload desktop plugins → pane 出现（需用户在桌面端操作）
-- [ ] 真机：USB + WDA → agent 跑 pua_tap 看手势光标；curl /frame 解码 JPEG
-- [ ] Codex 共存 lease 仲裁确认
+**5.5 验证进度**：
+- [x] install-hermes.sh 实际执行（symlink + plugins.enabled + MCP 指向；`chmod +x` 后通过）
+- [x] WDA 冷启动（第一次 Authentication canceled，重试成功；`pua_ready` ready=true 全 proof）
+- [x] 桥真实帧：`curl 127.0.0.1:18199/frame` → 1320×2868 JPEG（vision 确认 Grok 帖子详情页）
+- [x] 手势事件：`pua_tap(200,500)` → bridge events 收到 tap（id=10, viewport 440×956）
+- [x] gateway 代理路由存在（desktop backend :51806 `/api/plugins/iphone-screen/*` 返回 auth 401 = 路由在、token 过即可；desktop app 自带会话）
+- [x] desktop 静态 lint：`desktop_surface_findings` 无发现；import fence 合规（react + react/jsx-runtime）
+- [ ] **用户操作**：⌘K Reload desktop plugins → Capabilities → Plugins 打开 iPhone Screen → pane 出现（首次 ctx.rest 触发 hot-mount）
+- [ ] Codex 共存 lease 仲裁确认（下次同时开两边时看）
 
 ## 5. 剩余工作（按序，含具体做法）
 
